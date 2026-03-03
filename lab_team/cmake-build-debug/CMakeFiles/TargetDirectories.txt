@@ -1,0 +1,3 @@
+C:/Users/artmi/CLionProjects/lab_team/cmake-build-debug/CMakeFiles/lab_team.dir
+C:/Users/artmi/CLionProjects/lab_team/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/artmi/CLionProjects/lab_team/cmake-build-debug/CMakeFiles/rebuild_cache.dir
