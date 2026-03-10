@@ -9,19 +9,14 @@ class Order{
 private:
     std::string Ticker_;
     std::string Exchange_;
-    double buyPrice;
-    double sellPrice;
-    OrderType TYPE;
+    double Price_;
+    OrderType TYPE_;
 public:
-    Order(std::string Ticker, std::string Exchange, double BP, double SP) :
-    Ticker_(Ticker), Exchange_(Exchange), buyPrice(BP), sellPrice(SP){}
+    Order(std::string Ticker, std::string Exchange, double price, OrderType t) :
+    Ticker_(Ticker), Exchange_(Exchange), Price_(price), TYPE_(t){}
 
-    double getBP() const{
-        return buyPrice;
-    };
-
-    double getSP() const{
-        return sellPrice;
+    double getPrice() const{
+        return Price_;
     }
 
 };
