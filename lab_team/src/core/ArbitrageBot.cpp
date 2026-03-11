@@ -44,15 +44,25 @@ std::vector <std::pair<Order, Order>>  ArbitrageBot::findArbitrage() {
                 exchanges_.end(),
                 [buyExchange](const std::unique_ptr<Exchange>& ex) {
                     return ex.get() == buyExchange;
-        }
-    ),
-    exchanges_.end()
-);
+            } 
+            ), exchanges_.end() 
+            );
+        
+        exchanges_.erase(
+            std::remove_if(
+                exchanges_.begin(),
+                exchanges_.end(),
+                [buyExchange](const std::unique_ptr<Exchange>& ex) {
+                    return ex.get() == sellExchange;
+            } 
+            ), exchanges_.end() 
+            );
     }
 
     return goodPairs;
 
 }
+
 
 
 
