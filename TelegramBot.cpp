@@ -139,4 +139,4 @@ void TelegramBot::run() {
     }
 }
 
-} // namespace telegram
+}
