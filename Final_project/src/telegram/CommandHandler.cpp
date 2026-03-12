@@ -35,18 +35,12 @@ std::string buildMarketOverview() {
 
     return out.str();}
 
-std::string buildDeals() {
-    Bybit bybitBtc("BTCUSDT", 99500.0, 99600.0);
-    OKX okxBtc("BTCUSDT", 100100.0, 100200.0);
-
-    Bybit bybitEth("ETHUSDT", 3450.0, 3460.0);
-    OKX okxEth("ETHUSDT", 3490.0, 3500.0);
-
+    std::string buildDeals() {
     ArbitrageBot bot;
-    bot.addExchange(&bybitBtc);
-    bot.addExchange(&okxBtc);
-    bot.addExchange(&bybitEth);
-    bot.addExchange(&okxEth);
+    bot.addExchange(std::make_unique<Bybit>("BTCUSDT", 99500.0, 99600.0));
+    bot.addExchange(std::make_unique<OKX>("BTCUSDT", 100100.0, 100200.0));
+    bot.addExchange(std::make_unique<Bybit>("ETHUSDT", 3450.0, 3460.0));
+    bot.addExchange(std::make_unique<OKX>("ETHUSDT", 3490.0, 3500.0));
 
     std::ostringstream out;
     out << std::fixed << std::setprecision(2);
