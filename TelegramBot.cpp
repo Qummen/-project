@@ -10,6 +10,18 @@ namespace telegram {
 
 using json = nlohmann::json;
 
+namespace {
+std::string mainMenu() {
+    return R"({
+        "inline_keyboard": [
+            [{"text": "Обзор рынка", "callback_data": "market"}],
+            [{"text": "Выгодные операции", "callback_data": "deals"}],
+            [{"text": "Кнопка заработать деньги", "callback_data": "money"}]
+        ]
+    })";
+}
+}
+
 TelegramBot::TelegramBot(std::string token)
     : token_(std::move(token)),
       baseUrl_("https://api.telegram.org/bot" + token_) {
@@ -78,7 +90,9 @@ std::string TelegramBot::httpPost(const std::string& url, const std::string& jso
     return response;
 }
 
-void TelegramBot::sendMessage(std::int64_t chatId, const std::string& text) const {
+void TelegramBot::sendMessage(std::int64_t chatId,
+                              const std::string& text,
+                              const std::string& replyMarkupJson) const {
     const std::string url = baseUrl_ + "/sendMessage";
 
     json body = {
@@ -86,11 +100,30 @@ void TelegramBot::sendMessage(std::int64_t chatId, const std::string& text) cons
         {"text", text}
     };
 
+    if (!replyMarkupJson.empty()) {
+        body["reply_markup"] = json::parse(replyMarkupJson);
+    }
+
     const std::string response = httpPost(url, body.dump());
     const json parsed = json::parse(response);
 
     if (!parsed.contains("ok") || !parsed["ok"].get<bool>()) {
         throw std::runtime_error("Telegram sendMessage failed: " + response);
+    }
+}
+
+void TelegramBot::answerCallbackQuery(const std::string& callbackId) const {
+    const std::string url = baseUrl_ + "/answerCallbackQuery";
+
+    json body = {
+        {"callback_query_id", callbackId}
+    };
+
+    const std::string response = httpPost(url, body.dump());
+    const json parsed = json::parse(response);
+
+    if (!parsed.contains("ok") || !parsed["ok"].get<bool>()) {
+        throw std::runtime_error("Telegram answerCallbackQuery failed: " + response);
     }
 }
 
@@ -111,6 +144,30 @@ void TelegramBot::pollUpdates() {
         const std::int64_t updateId = update["update_id"].get<std::int64_t>();
         lastUpdateId_ = updateId + 1;
 
+        if (update.contains("callback_query")) {
+            const auto& callback = update["callback_query"];
+
+            if (!callback.contains("id") || !callback.contains("data")) {
+                continue;
+            }
+
+            if (!callback.contains("message") ||
+                !callback["message"].contains("chat") ||
+                !callback["message"]["chat"].contains("id")) {
+                continue;
+            }
+
+            const std::string callbackId = callback["id"].get<std::string>();
+            const std::string data = callback["data"].get<std::string>();
+            const std::int64_t chatId = callback["message"]["chat"]["id"].get<std::int64_t>();
+
+            answerCallbackQuery(callbackId);
+
+            const std::string answer = handler_.handleCallback(data);
+            sendMessage(chatId, answer, mainMenu());
+            continue;
+        }
+
         if (!update.contains("message")) {
             continue;
         }
@@ -129,7 +186,12 @@ void TelegramBot::pollUpdates() {
         const std::string text = message["text"].get<std::string>();
 
         const std::string answer = handler_.handleMessage(text);
-        sendMessage(chatId, answer);
+
+        if (text == "/start") {
+            sendMessage(chatId, answer, mainMenu());
+        } else {
+            sendMessage(chatId, answer);
+        }
     }
 }
 
