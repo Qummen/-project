@@ -13,15 +13,12 @@
 int main() {
     try {
         std::cout << "=== Arbitrage bot ===\n";
-        Bybit bybitBtc("BTC/USDT", 99500.0, 99600.0);
-        OKX   okxBtc("BTC/USDT", 100100.0, 100200.0);
-        Bybit bybitEth("ETH/USDT", 3450.0, 3460.0);
-        OKX   okxEth("ETH/USDT", 3490.0, 3500.0);
+
         ArbitrageBot bot;
-        bot.addExchange(&bybitBtc);
-        bot.addExchange(&okxBtc);
-        bot.addExchange(&bybitEth);
-        bot.addExchange(&okxEth);
+        bot.addExchange(std::make_unique<Bybit>("BTC/USDT", 99500.0, 99600.0));
+        bot.addExchange(std::make_unique<OKX>("BTC/USDT", 100100.0, 100200.0));
+        bot.addExchange(std::make_unique<Bybit>("ETH/USDT", 3450.0, 3460.0));
+        bot.addExchange(std::make_unique<OKX>("ETH/USDT", 3490.0, 3500.0));
         try { auto opportunities = bot.findArbitrage();
             std::cout << "Found opportunities: " << opportunities.size() << "\n\n";
             for (std::size_t i = 0; i < opportunities.size(); ++i) {
@@ -46,3 +43,4 @@ int main() {
     }
     return 0;
 }
+
