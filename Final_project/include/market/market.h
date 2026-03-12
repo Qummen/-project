@@ -18,7 +18,7 @@ private:
         out.resize(n);
         for (std::size_t i = 0; i < n; ++i)
             out[i] = dist(rng);
-    }\
+    }
 public:
     Market() = default;
 
