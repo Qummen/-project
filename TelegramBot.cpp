@@ -66,6 +66,26 @@ void TelegramBot::pollUpdates() {
     for (const auto& update : parsed["result"]) {
         const std::int64_t updateId = update["update_id"].get<std::int64_t>();
         lastUpdateId_ = updateId + 1;
+
+        if (!update.contains("message")) {
+            continue;
+        }
+
+        const auto& message = update["message"];
+
+        if (!message.contains("chat") || !message["chat"].contains("id")) {
+            continue;
+        }
+
+        if (!message.contains("text")) {
+            continue;
+        }
+
+        const std::int64_t chatId = message["chat"]["id"].get<std::int64_t>();
+        const std::string text = message["text"].get<std::string>();
+
+        const std::string answer = handler_.handleMessage(text);
+        sendMessage(chatId, answer);
     }
 }
 
