@@ -36,8 +36,7 @@ add_executable(Final_project
         src/telegram/CommandHandler.cpp
         src/telegram/TelegramBot.cpp
         src/core/ArbitrageBot.cpp
-        src/core/ArbitrageBot.cpp
-        src/core/ArbitrageBot.cpp
+
 )
 
 target_include_directories(Final_project PRIVATE include)
