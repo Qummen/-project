@@ -21,6 +21,7 @@ namespace telegram {
         static std::size_t writeCallback(void* contents, std::size_t size, std::size_t nmemb, void* userp);
 
         std::string httpGet(const std::string& url) const;
+        std::string httpPost(const std::string& url, const std::string& jsonBody) const;
 
         void pollUpdates();
         void sendMessage(std::int64_t chatId, const std::string& text) const;
