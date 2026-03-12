@@ -1,10 +1,14 @@
 #include "telegram/TelegramBot.h"
 
 #include <curl/curl.h>
+#include <nlohmann/json.hpp>
+
 #include <stdexcept>
 #include <utility>
 
 namespace telegram {
+
+using json = nlohmann::json;
 
 TelegramBot::TelegramBot(std::string token)
     : token_(std::move(token)),
@@ -47,6 +51,22 @@ void TelegramBot::sendMessage(std::int64_t, const std::string&) const {
 }
 
 void TelegramBot::pollUpdates() {
+    std::string url = baseUrl_ + "/getUpdates?timeout=25";
+    if (lastUpdateId_ > 0) {
+        url += "&offset=" + std::to_string(lastUpdateId_);
+    }
+
+    const std::string response = httpGet(url);
+    const json parsed = json::parse(response);
+
+    if (!parsed.contains("ok") || !parsed["ok"].get<bool>()) {
+        throw std::runtime_error("Telegram getUpdates failed: " + response);
+    }
+
+    for (const auto& update : parsed["result"]) {
+        const std::int64_t updateId = update["update_id"].get<std::int64_t>();
+        lastUpdateId_ = updateId + 1;
+    }
 }
 
 void TelegramBot::run() {
