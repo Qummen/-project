@@ -4,7 +4,7 @@ namespace telegram {
 
 std::string CommandHandler::handleMessage(const std::string& text) const {
     if (text == "/start") {
-        return "Бот запущен. Используйте команды /market, /deals, /money";
+        return "Выберите действие:";
     }
 
     if (text == "/market") {
@@ -20,6 +20,22 @@ std::string CommandHandler::handleMessage(const std::string& text) const {
     }
 
     return "Неизвестная команда.";
+}
+
+std::string CommandHandler::handleCallback(const std::string& data) const {
+    if (data == "market") {
+        return "Обзор рынка пока в разработке.";
+    }
+
+    if (data == "deals") {
+        return "Выгодные операции пока в разработке.";
+    }
+
+    if (data == "money") {
+        return "Функция заработка пока в разработке.";
+    }
+
+    return "Неизвестная кнопка.";
 }
 
 } // namespace telegram
