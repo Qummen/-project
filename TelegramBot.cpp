@@ -47,7 +47,51 @@ std::string TelegramBot::httpGet(const std::string& url) const {
     return response;
 }
 
-void TelegramBot::sendMessage(std::int64_t, const std::string&) const {
+std::string TelegramBot::httpPost(const std::string& url, const std::string& jsonBody) const {
+    CURL* curl = curl_easy_init();
+    if (!curl) {
+        throw std::runtime_error("Failed to init CURL");
+    }
+
+    std::string response;
+    struct curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonBody.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &TelegramBot::writeCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
+    const CURLcode result = curl_easy_perform(curl);
+    if (result != CURLE_OK) {
+        const std::string error = curl_easy_strerror(result);
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        throw std::runtime_error("POST request failed: " + error);
+    }
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    return response;
+}
+
+void TelegramBot::sendMessage(std::int64_t chatId, const std::string& text) const {
+    const std::string url = baseUrl_ + "/sendMessage";
+
+    json body = {
+        {"chat_id", chatId},
+        {"text", text}
+    };
+
+    const std::string response = httpPost(url, body.dump());
+    const json parsed = json::parse(response);
+
+    if (!parsed.contains("ok") || !parsed["ok"].get<bool>()) {
+        throw std::runtime_error("Telegram sendMessage failed: " + response);
+    }
 }
 
 void TelegramBot::pollUpdates() {
