@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.16)
-project(lab_team)
+cmake_minimum_required(VERSION 4.0)
+project(Final_project)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,7 +17,7 @@ if(NOT nlohmann_json_FOUND)
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
-add_executable(lab_team
+add_executable(Final_project
         main.cpp
         include/core/Exchange.h
         src/core/Exchange.cpp
@@ -40,9 +40,9 @@ add_executable(lab_team
         src/core/ArbitrageBot.cpp
 )
 
-target_include_directories(lab_team PRIVATE include)
+target_include_directories(Final_project PRIVATE include)
 
-target_link_libraries(lab_team PRIVATE
+target_link_libraries(Final_project PRIVATE
         CURL::libcurl
         nlohmann_json::nlohmann_json
 )
