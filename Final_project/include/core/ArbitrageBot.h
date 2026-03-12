@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Exchange.h"
-#include "Order.h"
+#include "order.h"
 
 #include <memory>
 #include <optional>
@@ -17,4 +17,5 @@ public:
 
     std::vector<std::pair<Order, Order>> findArbitrage();
     std::optional<std::pair<Order, Order>> findBestArbitrage() const;
+
 };
