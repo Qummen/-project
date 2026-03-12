@@ -22,15 +22,15 @@ add_executable(Final_project
         include/core/Exchange.h
         src/core/Exchange.cpp
         include/exchanges/OKX.h
-        src/exchanges/OKX.cpp
+        src/Exchanges_src/OKX.cpp
         include/core/ArbitrageBot.h
         src/core/ArbitrageBot.cpp
         include/exchanges/Bybit.h
-        src/exchanges/Bybit.cpp
+        src/Exchanges_src/Bybit.cpp
         include/core/order.h
         src/core/order.cpp
         include/market/market.h
-        src/market/market.cpp
+        src/Market_src/market.cpp
         include/telegram/CommandHandler.h
         include/telegram/TelegramBot.h
         src/telegram/CommandHandler.cpp
