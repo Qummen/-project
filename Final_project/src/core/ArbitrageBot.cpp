@@ -6,11 +6,11 @@ void ArbitrageBot::addExchange(std::unique_ptr<Exchange> ex){
     exchanges_.push_back(std::move(ex));
 }
 
-std::vector <std::pair<Order, Order>>  ArbitrageBot::findArbitrage() {
+std::vector <std::pair<Order, Order>>  ArbitrageBot::findArbitrage(){
     std::vector<std::pair<Order, Order>> goodPairs;
-    while (!exchanges_.empty()) {
-        if (exchanges_.size() < 2) {
-            throw std::runtime_error("We need minimum 2 exchanges");
+    while (!exchanges_.empty()){
+        if (exchanges_.size() < 2){
+            break;
         }
 
         const Exchange* buyExchange = nullptr;
@@ -30,7 +30,7 @@ std::vector <std::pair<Order, Order>>  ArbitrageBot::findArbitrage() {
             }
         }
 
-        if (bestBuy >= bestSell * 0.99) {
+        if (bestBuy >= bestSell * 0.99){
             throw std::runtime_error("No opportunity");
         }
 
@@ -42,7 +42,7 @@ std::vector <std::pair<Order, Order>>  ArbitrageBot::findArbitrage() {
             std::remove_if(
                 exchanges_.begin(),
                 exchanges_.end(),
-                [buyExchange](const std::unique_ptr<Exchange>& ex) {
+                [buyExchange](const std::unique_ptr<Exchange>& ex){
                     return ex.get() == buyExchange;
                 }
             ),
@@ -54,3 +54,4 @@ std::vector <std::pair<Order, Order>>  ArbitrageBot::findArbitrage() {
 
     return goodPairs;
 }
+
