@@ -17,6 +17,18 @@ if(NOT nlohmann_json_FOUND)
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
+# ---- Google Benchmark ----
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
+
+FetchContent_Declare(
+        benchmark
+        GIT_REPOSITORY https://github.com/google/benchmark.git
+        GIT_TAG v1.8.4
+)
+FetchContent_MakeAvailable(benchmark)
+
+
 add_executable(Final_project
         main.cpp
         include/core/Exchange.h
@@ -40,6 +52,28 @@ add_executable(Final_project
 )
 
 target_include_directories(Final_project PRIVATE include)
+
+add_executable(benchmarks
+        benchmarks/bench_arbitrage.cpp
+
+        src/core/Exchange.cpp
+        src/Exchanges_src/OKX.cpp
+        src/core/ArbitrageBot.cpp
+        src/Exchanges_src/Bybit.cpp
+        src/core/order.cpp
+        src/Market_src/market.cpp
+        src/telegram/CommandHandler.cpp
+        src/telegram/TelegramBot.cpp
+)
+
+target_include_directories(benchmarks PRIVATE include)
+
+target_link_libraries(benchmarks PRIVATE
+        benchmark::benchmark
+        benchmark::benchmark_main
+        CURL::libcurl
+        nlohmann_json::nlohmann_json
+)
 
 target_link_libraries(Final_project PRIVATE
         CURL::libcurl
