@@ -42,8 +42,8 @@ std::vector <std::pair<Order, Order>>  ArbitrageBot::findArbitrage(){
             std::remove_if(
                 exchanges_.begin(),
                 exchanges_.end(),
-                [buyExchange](const std::unique_ptr<Exchange>& ex){
-                    return ex.get() == buyExchange;
+                [buyExchange, sellExchange](const std::unique_ptr<Exchange>& ex){
+                    return ex.get() == buyExchange || ex.get() == sellExchange;
                 }
             ),
         exchanges_.end()
